@@ -17,8 +17,8 @@ class BasePipeline(ABC):
     """
     Base class for all pipelines.
     """
-    def __init__(self, config: Dict[AnyStr, Any]):
-        self.config = config
+    def __init__(self, config: AnyStr):
+        self.config = self.read_config(config)
         self.run_tag = RunTag(run_id=self.config.get("run_id", "default_run"))
 
     def read_config(self, filepath: AnyStr, **kwargs) -> Dict[AnyStr, Any]:

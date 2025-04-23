@@ -7,15 +7,12 @@ import pandas as pd
 from src.utils.log_utils import Logger
 from typing import Dict, Any, AnyStr, Optional
 
-class DataPipe(BasePipeline):
+class DataPipeline(BasePipeline):
     """
     Data pipeline class that handles data ingestion tasks.
     """
-    def __init__(self, config: Dict[AnyStr, Any]):
+    def __init__(self, config: AnyStr):
         super().__init__(config)
-        self.data_in_path = config.get("data_path")
-        self.data_out_path = config.get("output_path")
-        self.multi_data_in_paths = config.get("multi_data_in_paths", None)
         self.logger = Logger.get_logger(self.__class__.__name__)
 
     def run(self):
@@ -25,22 +22,22 @@ class DataPipe(BasePipeline):
         """
         raise NotImplementedError("The run method should be implemented by subclasses.")
         
-    def load_data(self, **kwargs) -> pd.DataFrame:
+    def load_data(self, data_in_path: AnyStr, **kwargs) -> pd.DataFrame:
         """
         Load data from a file.
         """
         try:
-            data = pd.read_csv(self.data_in_path, **kwargs)
-            self.logger.info("Data loaded from: %s", self.data_in_path)
+            data = pd.read_csv(data_in_path, **kwargs)
+            self.logger.info("Data loaded from: %s", data_in_path)
             return data
         except FileNotFoundError:
-            self.logger.error("The file %s does not exist.", self.data_in_path)
+            self.logger.error("The file %s does not exist.", data_in_path)
             raise
         except pd.errors.EmptyDataError:
-            self.logger.error("The file %s is empty.", self.data_in_path)
+            self.logger.error("The file %s is empty.", data_in_path)
             raise
 
-    def write_data(self, data_df: pd.DataFrame) -> None:
+    def write_data(self, data_df: pd.DataFrame, data_out_path: AnyStr) -> None:
         """Write data to a file.
 
         "write_data" method to save the data to a CSV file.
@@ -55,15 +52,16 @@ class DataPipe(BasePipeline):
             Exception: If there is an error saving the data.
         """
         try:
-            data_df.to_csv(self.data_out_path, index=False)
-            self.logger.info("Data is saved to path: %s", self.data_out_path)
+            data_df.to_csv(data_out_path, index=False)
+            self.logger.info("Data is saved to path: %s", data_out_path)
         except Exception as e:
-            self.logger.error("Error saving data to %s: %s", self.data_out_path, str(e))
+            self.logger.error("Error saving data to %s: %s", data_out_path, str(e))
             raise
 
     def combine_dataframes(
         self,
         data_df : pd.DataFrame,
+        data_df_to_combine: pd.DataFrame,
         operation: AnyStr,
         key: Optional[AnyStr] = None,
         **kwargs
@@ -90,15 +88,15 @@ class DataPipe(BasePipeline):
                 self.logger.error("Key is not provided for merge operation.")
                 raise ValueError("Key must be provided for merge operation.")
             self.logger.info("Merging dataframes on key: %s", key)
-            return data_df.merge(data_df, on=key, **kwargs)
+            return data_df.merge(data_df_to_combine, on=key, **kwargs)
         elif operation == "join":
             if key is None:
                 self.logger.error("Key is not provided for join operation.")
                 raise ValueError("Key must be provided for join operation.")
             self.logger.info("Joining dataframes on key: %s", key)
-            return data_df.join(data_df.set_index(key), **kwargs)
+            return data_df.join(data_df_to_combine.set_index(key), **kwargs)
         elif operation == "concat":
             self.logger.info("Concatenating dataframes.")
-            return pd.concat([data_df, data_df], **kwargs)
+            return pd.concat([data_df, data_df_to_combine], **kwargs)
         else:
             raise ValueError(f"Operation {operation} is not supported.")

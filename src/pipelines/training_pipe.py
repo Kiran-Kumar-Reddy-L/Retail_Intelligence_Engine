@@ -1,3 +1,5 @@
+"""_summary_
+"""
 import numpy as np
 import pandas as pd
 import os
@@ -15,12 +17,13 @@ class TrainingPipe(BasePipeline):
     Args:
         BasePipeline (_type_): _description_
     """
-    def __init__(self, config: Dict[AnyStr, Any]):
+    def __init__(self, config: AnyStr):
         super().__init__(config)
         self.tracking_uri = config.get("tracking_uri", "http://localhost:5000")
         self.experiment_name = config.get("experiment_name")
         self.model_hyperparameters = config.get("model_hyperparameters")
         self.model_save_path = config.get("model_save_path")
+        self.model_type = config.get("model_type")
         self.logger = Logger.get_logger(self.__class__.__name__)
 
 
@@ -64,28 +67,43 @@ class TrainingPipe(BasePipeline):
         model.fit(X_train, y_train)
         return model
     
-    def model_evaluation(
+    def log_model_with_metadata(
         self,
         model: Any,
         X_test: np.array,
         y_test: np.array
-    ) -> float:
+    ) -> None:
         """_summary_
 
         Args:
-            model (_type_): _description_
+            model (Any): _description_
             X_test (np.array): _description_
             y_test (np.array): _description_
-
-        Returns:
-            float: _description_
         """
-        self.logger.info("Evaluating the model.")
-        predictions = model.predict(X_test)
-        accuracy = np.mean(predictions == y_test)
-        self.logger.info("Model accuracy: %f", accuracy)
-        return accuracy
-    
+        self.logger.info("Logging the model and metrics to MLflow.")
+
+        # Wrap the model with PyFuncModelWrapper
+        wrapped_model = PyFuncModelWrapper(model)
+
+        # Log the model and evaluate metrics
+        with mlflow.start_run():
+            mlflow.pyfunc.log_model(
+                artifact_path="model",
+                python_model=wrapped_model
+            )
+
+            # use mlflow.evaluate to log metrics
+            evaluation_result = mlflow.evaluate(
+                model=wrapped_model,
+                data=(X_test, y_test),
+                targets=y_test,
+                model_type=self.model_type,
+                evaluation_config={"metric_prefix": "test_"}
+            )
+
+            self.logger.info("Model evaluation result: %s", evaluation_result)
+
+        self.logger.info("Model and Metrics logged successfully.")
 
     def run(self):
         pass

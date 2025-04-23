@@ -1,8 +1,1 @@
 [data]
-multiple_data_in_paths = [
-    "data/Amazon Sale Report.csv",
-    "data/International sale Report.csv",
-    "data/Sale Report.csv"
-    "data/P&L March 2021.csv",
-    "data/May-2022.csv"
-]

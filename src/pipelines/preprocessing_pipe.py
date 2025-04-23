@@ -4,32 +4,26 @@ This pipeline includes data cleaning, feature engineering, and data transformati
 It inherits from the DataPipeline class and implements the run method to execute the pipeline.
 """
 
-from src.pipelines.data_pipe import DataPipe
+from src.pipelines.data_pipe import DataPipeline
+from src.utils.log_utils import Logger
 import pandas as pd
 from typing import Dict, Any, AnyStr
 
-class PreprocessingPipeline(DataPipe):
+class PreprocessingPipeline(DataPipeline):
     """_summary_
 
     Args:
         DataPipe (_type_): _description_
     """
-    def __init__(self, config: Dict[AnyStr, Any]):
+    def __init__(self, config: AnyStr):
         super().__init__(config)
-        self.config = config
+        self.logger = Logger.get_logger(self.__class__.__name__)
     
     def run(self):
         """
         Run the preprocessing pipeline.
         """
-        # Read data
-        data = self.read_data(self.config["input_data_path"])
-        
-        # Preprocess data
-        preprocessed_data = self.preprocess_data(data)
-        
-        # Write data
-        self.write_data(preprocessed_data)
+        raise NotImplementedError("The run method should be implemented by subclasses.")
                         
     def apply_data_cleaning(self, data: pd.DataFrame) -> pd.DataFrame:
         """
