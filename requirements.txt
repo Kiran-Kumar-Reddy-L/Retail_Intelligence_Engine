@@ -1,0 +1,11 @@
+# add required libraries for installation
+numpy
+pandas
+scikit-learn
+matplotlib
+seaborn
+fastapi
+uvicorn
+pydantic
+mlflow
+jupyter
