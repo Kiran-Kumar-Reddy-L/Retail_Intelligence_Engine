@@ -2,19 +2,24 @@
 Base pipeline class for data ingestion tasks.
 This module defines the DataPipe class, which is responsible for loading and saving data.
 """
-from src.pipelines.base_pipe import BasePipeline
+
+from typing import Any, AnyStr, Dict, Optional
+
 import pandas as pd
+
+from src.pipelines.base_pipe import BasePipeline
 from src.utils.log_utils import Logger
-from typing import Dict, Any, AnyStr, Optional
+
 
 class DataPipeline(BasePipeline):
     """
     Data pipeline class that handles data ingestion tasks.
     """
+
     def __init__(self, config: AnyStr):
         super().__init__(config)
         self.logger = Logger.get_logger(self.__class__.__name__)
-        
+
     def load_data(self, data_in_path: AnyStr, **kwargs) -> pd.DataFrame:
         """
         Load data from a file.
@@ -37,10 +42,10 @@ class DataPipeline(BasePipeline):
 
         Args:
             data_df (pd.DataFrame): DataFrame to be saved.
-        
+
         Returns:
             None
-        
+
         Raises:
             Exception: If there is an error saving the data.
         """
@@ -53,15 +58,15 @@ class DataPipeline(BasePipeline):
 
     def combine_dataframes(
         self,
-        data_df : pd.DataFrame,
+        data_df: pd.DataFrame,
         data_df_to_combine: pd.DataFrame,
         operation: AnyStr,
         key: Optional[AnyStr] = None,
-        **kwargs
+        **kwargs,
     ) -> pd.DataFrame:
         """Combine multiple dataframes based on the specified operation.
 
-        "combine_dataframes" method can be used to merge, join, or concatenate dataframes 
+        "combine_dataframes" method can be used to merge, join, or concatenate dataframes
         based on the operation specified.
 
         Args:
@@ -69,7 +74,7 @@ class DataPipeline(BasePipeline):
             operation (str): Operation to perform on the dataframes.
             key (str, optional): Key to join on. Defaults to None.
             **kwargs: Additional arguments for the operation.
-        
+
         Returns:
             pd.DataFrame: Combined DataFrame.
 

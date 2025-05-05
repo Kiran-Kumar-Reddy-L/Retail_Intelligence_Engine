@@ -1,7 +1,9 @@
+from typing import Any, AnyStr, Dict
+
 from sklearn.linear_model import LinearRegression
-from src.utils.log_utils import Logger
-from typing import AnyStr, Dict, Any
+
 from src.pipelines.training_pipe import TrainingPipeline
+from src.utils.log_utils import Logger
 
 
 class RIETraining(TrainingPipeline):
@@ -9,6 +11,7 @@ class RIETraining(TrainingPipeline):
     Retail Intelligence Engine Training Pipeline.
     This class extends the TrainingPipeline to handle specific training tasks.
     """
+
     def __init__(self, config: AnyStr):
         super().__init__(config)
 
@@ -36,14 +39,8 @@ class RIETraining(TrainingPipeline):
             model=LinearRegression,
             hyperparameters=self.config["hyperparameters"],
             X_train=x_train,
-            y_train=y_train
+            y_train=y_train,
         )
 
         # Log the model
-        self.log_model_with_metadata(
-            model=trained_model,
-            X_test=x_test,
-            y_test=y_test
-        )
-
-    
+        self.log_model_with_metadata(model=trained_model, X_test=x_test, y_test=y_test)

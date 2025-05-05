@@ -1,6 +1,7 @@
 import mlflow
 import pandas as pd
 
+
 class PyFuncModelWrapper(mlflow.pyfunc.PythonModel):
     def __init__(self, model):
         """

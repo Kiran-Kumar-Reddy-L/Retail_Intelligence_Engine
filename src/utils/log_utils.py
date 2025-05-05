@@ -1,12 +1,15 @@
 """
 A utility module for logging in Python.
 """
+
 import logging
+from typing import Dict
+
 
 class Logger:
     """A utility class for setting up and managing loggers."""
-    
-    _loggers = {}  # Cache for loggers to avoid duplicate handlers
+
+    _loggers: Dict[str, logging.Logger] = {}  # Cache for loggers to avoid duplicate handlers
 
     @staticmethod
     def get_logger(name: str, level: str = "INFO") -> logging.Logger:
@@ -16,7 +19,9 @@ class Logger:
             logger.setLevel(level)
             if not logger.handlers:  # Avoid adding multiple handlers
                 handler = logging.StreamHandler()
-                handler.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s'))
+                handler.setFormatter(
+                    logging.Formatter("[%(asctime)s] %(levelname)s: %(message)s")
+                )
                 logger.addHandler(handler)
             Logger._loggers[name] = logger
         return Logger._loggers[name]

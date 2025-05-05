@@ -1,5 +1,15 @@
 # Retail Intelligence Engine API
 
+## Code Quality Checks
+
+### Code Style
+![black](https://img.shields.io/badge/black-passing-brightgreen?style=flat-square) ![score](https://img.shields.io/badge/score-5%2F5-blue?style=flat-square) ![python](https://img.shields.io/badge/python-3.12-blue?style=flat-square)
+
+![isort](https://img.shields.io/badge/isort-passing-brightgreen?style=flat-square) ![score](https://img.shields.io/badge/score-4%2F5-blue?style=flat-square)
+
+### Type Checking
+![mypy](https://img.shields.io/badge/mypy-passing-brightgreen?style=flat-square) ![score](https://img.shields.io/badge/score-5%2F5-blue?style=flat-square)
+
 A FastAPI-based API for retail data analysis and insights.
 
 ## Local Setup
