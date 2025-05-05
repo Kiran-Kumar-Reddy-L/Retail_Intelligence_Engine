@@ -1,7 +1,6 @@
 import pandas as pd
 from src.utils.log_utils import Logger
 from typing import Dict, Any, AnyStr
-from src.pipelines.data_pipe import DataPipeline
 from src.pipelines.preprocessing_pipe import PreprocessingPipeline
 
 class RIEDataProcessingPipeline(PreprocessingPipeline):
@@ -27,7 +26,7 @@ class RIEDataProcessingPipeline(PreprocessingPipeline):
         self.load_and_preprocess_generic_sale_report_data()
 
         # Load and preprocess expense report data
-        self.load_and_preprocess_expense_report_data()
+        self.load_and_preprocess_int_sales_report_data()
 
         # Load and preprocess profit and loss report data
         self.load_and_preprocess_pl_report_data()
@@ -68,19 +67,19 @@ class RIEDataProcessingPipeline(PreprocessingPipeline):
         self.write_data(preprocessed_data, self.preprocessed_output_data_paths["sales_report_preprocessed"])
 
     
-    def load_and_preprocess_expense_report_data(self):
+    def load_and_preprocess_int_sales_report_data(self):
         """
         load and preprocess data.
         """
         # Load data
-        self.logger.info("Load and Preprocess the expense report data.")
-        data = self.load_data(self.raw_input_data_paths["expense_report"], sep=",", encoding="utf-8")
+        self.logger.info("Load and Preprocess the international sales report data.")
+        data = self.load_data(self.raw_input_data_paths["int_sales_report"], sep=",", encoding="utf-8")
         
         # Preprocess data
         preprocessed_data = self.preprocess_data(data)
 
         # Save preprocessed data
-        self.write_data(preprocessed_data, self.preprocessed_output_data_paths["expense_report_preprocessed"])
+        self.write_data(preprocessed_data, self.preprocessed_output_data_paths["int_sales_report_preprocessed"])
 
     def load_and_preprocess_pl_report_data(self):
         """
@@ -117,7 +116,7 @@ class RIEDataProcessingPipeline(PreprocessingPipeline):
         self.logger.info("Load and combine all preprocessed data.")
         data_amazon_sales_report = self.load_data(self.preprocessed_output_data_paths["amazon_sales_report_preprocessed"], sep=",", encoding="utf-8")
         data_generic_sales_report = self.load_data(self.preprocessed_output_data_paths["sales_report_preprocessed"], sep=",", encoding="utf-8")
-        data_expense_report = self.load_data(self.preprocessed_output_data_paths["expense_report_preprocessed"], sep=",", encoding="utf-8")
+        data_int_sales_report = self.load_data(self.preprocessed_output_data_paths["int_sales_report_preprocessed"], sep=",", encoding="utf-8")
         data_pl_report = self.load_data(self.preprocessed_output_data_paths["pl_report_preprocessed"], sep=",", encoding="utf-8")
 
         # Combine all preprocessed data
@@ -131,7 +130,7 @@ class RIEDataProcessingPipeline(PreprocessingPipeline):
 
         combined_df_2 = self.combine_dataframes(
             data_df=combined_df_1,
-            data_df_to_combine=data_expense_report,
+            data_df_to_combine=data_int_sales_report,
             operation="",
             axis=0,
             ignore_index=True

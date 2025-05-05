@@ -14,13 +14,6 @@ class DataPipeline(BasePipeline):
     def __init__(self, config: AnyStr):
         super().__init__(config)
         self.logger = Logger.get_logger(self.__class__.__name__)
-
-    def run(self):
-        """
-        Run the data pipeline.
-        This method should be implemented by subclasses.
-        """
-        raise NotImplementedError("The run method should be implemented by subclasses.")
         
     def load_data(self, data_in_path: AnyStr, **kwargs) -> pd.DataFrame:
         """

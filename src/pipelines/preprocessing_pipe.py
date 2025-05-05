@@ -7,7 +7,7 @@ It inherits from the DataPipeline class and implements the run method to execute
 from src.pipelines.data_pipe import DataPipeline
 from src.utils.log_utils import Logger
 import pandas as pd
-from typing import Dict, Any, AnyStr
+from typing import Dict, Any, AnyStr, List
 
 class PreprocessingPipeline(DataPipeline):
     """_summary_
@@ -18,23 +18,26 @@ class PreprocessingPipeline(DataPipeline):
     def __init__(self, config: AnyStr):
         super().__init__(config)
         self.logger = Logger.get_logger(self.__class__.__name__)
-    
-    def run(self):
-        """
-        Run the preprocessing pipeline.
-        """
-        raise NotImplementedError("The run method should be implemented by subclasses.")
+        self.drop_columns = config.get("drop_columns", [])
+        self.dtype_columns = config.get("dtype_columns", {})
                         
     def apply_data_cleaning(self, data: pd.DataFrame) -> pd.DataFrame:
         """
         Apply data cleaning steps to the data.
         """
-        # Example: Remove duplicates
+        # Remove duplicates
         data = data.drop_duplicates()
         
-        # Example: Fill missing values
-        data = data.fillna(method='ffill')
+        # Drop columns
+        data = data.drop(columns=self.drop_columns, errors='ignore')    
         
+        # Standardize column names
+        data.columns = data.columns.str.lower().str.replace(' ', "")
+
+        # Convert data types
+        for column, dtype in self.dtype_columns.items():
+            if column in data.columns:
+                data[column] = data[column].astype(dtype)
         return data
     
     def apply_feature_engineering(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -53,6 +56,29 @@ class PreprocessingPipeline(DataPipeline):
 
         return data
     
+    def apply_groupby_aggregation(
+            self,
+            data: pd.DataFrame,
+            group_by: List[AnyStr] | AnyStr,
+            agg_func: Dict[str, str]
+        ) -> pd.DataFrame:
+        """
+        Apply groupby aggregation to the data.
+        """
+        data = data.groupby(group_by).agg(agg_func).reset_index()
+        return data
+
+    def filter_data(
+            self,
+            data: pd.DataFrame,
+            filter_condition: str
+        ) -> pd.DataFrame:
+        """
+        Filter the data based on a condition.
+        """
+        data = data.query(filter_condition)
+        return data
+
     def preprocess_data(self, data: pd.DataFrame) -> pd.DataFrame:
         """
         Preprocess the data by applying data cleaning, feature engineering, and transformation.

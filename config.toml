@@ -1,1 +1,36 @@
+# config file
+
 [data]
+drop_columns = ["index", "promotion-ids", "Unnamed: 22", "fulfilled-by", "ship-country", "currency", "ASIN", "Courier Status"]
+
+[data.status_mapping]
+'shipped - delivered to buyer' = "delivered"
+'shipped - returned to seller' = "returned"
+'shipped - rejected by buyer' = "returned"
+'shipped - lost in transit' = "shipped"
+'shipped - out for delivery' = "shipped"
+'shipped - returning to seller' = "returned"
+'shipped - picked up' = "shipped"
+'pending - waiting for pick up' = "pending"
+'shipped - damaged' = "returned"
+'shipping' = "shipped"
+
+[data.dtype_columns]
+order_id =  "string"
+date =  "string" 
+status =  "string" 
+fulfilment =  "string" 
+sales_channel =  "string" 
+ship_service_level =  "string" 
+style =  "string" 
+sku =  "string" 
+category =  "string" 
+size =  "string" 
+courier_status =  "string" 
+qty =  "int8"
+currency =  "string" 
+amount =  "float16"
+ship_city =  "string" 
+ship_state =  "string" 
+ship_postal_code =  "int16"
+ship_country =  "string"

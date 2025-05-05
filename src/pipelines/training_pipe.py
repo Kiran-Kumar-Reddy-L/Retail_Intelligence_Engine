@@ -6,12 +6,13 @@ import os
 import logging
 import mlflow
 from typing import Dict, Any, AnyStr
-from src.pipelines.base_pipe import BasePipeline
+from src.pipelines.data_pipe import DataPipeline
 from sklearn.model_selection import train_test_split
 from mlflow.models.model import Model
 from src.utils.log_utils import Logger
+from src.utils.pyfunc_model_wrapper import PyFuncModelWrapper
 
-class TrainingPipe(BasePipeline):
+class TrainingPipeline(DataPipeline):
     """_summary_
 
     Args:
@@ -21,7 +22,6 @@ class TrainingPipe(BasePipeline):
         super().__init__(config)
         self.tracking_uri = config.get("tracking_uri", "http://localhost:5000")
         self.experiment_name = config.get("experiment_name")
-        self.model_hyperparameters = config.get("model_hyperparameters")
         self.model_save_path = config.get("model_save_path")
         self.model_type = config.get("model_type")
         self.logger = Logger.get_logger(self.__class__.__name__)
@@ -88,7 +88,7 @@ class TrainingPipe(BasePipeline):
         # Log the model and evaluate metrics
         with mlflow.start_run():
             mlflow.pyfunc.log_model(
-                artifact_path="model",
+                artifact_path=self.model_save_path,
                 python_model=wrapped_model
             )
 
@@ -98,12 +98,13 @@ class TrainingPipe(BasePipeline):
                 data=(X_test, y_test),
                 targets=y_test,
                 model_type=self.model_type,
-                evaluation_config={"metric_prefix": "test_"}
+                evaluator_config={"metric_prefix": "test_"}
             )
 
             self.logger.info("Model evaluation result: %s", evaluation_result)
 
         self.logger.info("Model and Metrics logged successfully.")
+
 
     def run(self):
         pass

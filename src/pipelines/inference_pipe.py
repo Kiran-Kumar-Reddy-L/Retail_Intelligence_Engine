@@ -1,7 +1,11 @@
-import mlflow.pyfunc
+"""_summary_
+"""
+import mlflow
 import pandas as pd
 
 class InferencePipeline:
+    """_summary_
+    """
     def __init__(self, model_uri: str):
         """
         Initialize the inference pipeline with the MLflow PyFunc model.
@@ -20,7 +24,3 @@ class InferencePipeline:
         predictions = self.model.predict(input_data)
         return pd.DataFrame(predictions, columns=["predictions"])
 
-# Example usage:
-# pipeline = InferencePipeline(model_uri="models:/my_model/1")
-# input_data = pd.DataFrame({...})
-# predictions = pipeline.predict(input_data)
